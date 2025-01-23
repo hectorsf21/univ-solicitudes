@@ -9,7 +9,7 @@ interface Solicitud {
 }
 
 export default function SolicitudesPendientes() {
-  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([
+  const [solicitudes] = useState<Solicitud[]>([
     { id: 1, nombre: "Solicitud de Materiales", status: "Pendiente" },
     { id: 2, nombre: "Solicitud de Equipos", status: "Pendiente" },
     { id: 3, nombre: "Solicitud de Servicios", status: "Pendiente" },
