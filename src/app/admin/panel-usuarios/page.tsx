@@ -20,10 +20,11 @@ export default function UserRegistration() {
     e.preventDefault();
     // Aquí iría la lógica para agregar un nuevo usuario
   };
-
-  const handleEdit = (id: number) => {
+  const handleEdit = (_id: number) => {
     // Aquí iría la lógica para editar un usuario
+    console.log("Editando usuario");
   };
+  
 
   const handleDelete = (id: number) => {
     // Aquí iría la lógica para eliminar un usuario
