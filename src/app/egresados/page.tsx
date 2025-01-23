@@ -1,26 +1,27 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { X } from "lucide-react"
+import { useState } from "react";
+import { X } from "lucide-react";
 
 interface Solicitud {
-  id: number
-  nombre: string
-  precio: number
+  id: number;
+  nombre: string;
+  precio: number;
 }
 
 interface PaymentFormData {
-  numeroTransferencia: string
-  fecha: string
-  nombre: string
-  cedula: string
-  carrera: string
-  monto: string
+  numeroTransferencia: string;
+  fecha: string;
+  nombre: string;
+  cedula: string;
+  carrera: string;
+  monto: string;
+  papel: string;
 }
 
 export default function PaymentTable() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
   const [formData, setFormData] = useState<PaymentFormData>({
     numeroTransferencia: "",
     fecha: "",
@@ -28,25 +29,25 @@ export default function PaymentTable() {
     cedula: "",
     carrera: "",
     monto: "",
-  })
+    papel: "Papel Blanco", // Valor inicial para el select
+  });
 
   const solicitudes: Solicitud[] = [
     { id: 1, nombre: "Solicitud de Certificación", precio: 150 },
     { id: 2, nombre: "Solicitud de Constancia", precio: 75 },
     { id: 3, nombre: "Solicitud de Título", precio: 300 },
     { id: 4, nombre: "Solicitud de Notas", precio: 50 },
-  ]
+  ];
 
   const handlePagar = (solicitud: Solicitud) => {
-    setSelectedSolicitud(solicitud)
-    setIsModalOpen(true)
-  }
+    setSelectedSolicitud(solicitud);
+    setIsModalOpen(true);
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Aquí iría la lógica para procesar el pago
-    console.log("Datos del pago:", formData)
-    setIsModalOpen(false)
+    e.preventDefault();
+    console.log("Datos del pago:", formData);
+    setIsModalOpen(false);
     setFormData({
       numeroTransferencia: "",
       fecha: "",
@@ -54,16 +55,17 @@ export default function PaymentTable() {
       cedula: "",
       carrera: "",
       monto: "",
-    })
-  }
+      papel: "Papel Blanco",
+    });
+  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -72,7 +74,7 @@ export default function PaymentTable() {
           <h2 className="text-xl font-semibold text-gray-800">Lista de Solicitudes</h2>
         </div>
 
-        {/* Tabla para pantallas medianas y grandes */}
+        {/* Tabla */}
         <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -106,37 +108,12 @@ export default function PaymentTable() {
             </tbody>
           </table>
         </div>
-
-        {/* Vista de cards para móvil */}
-        <div className="md:hidden">
-          {solicitudes.map((solicitud) => (
-            <div
-              key={solicitud.id}
-              className="p-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
-            >
-              <div className="flex flex-col space-y-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{solicitud.nombre}</p>
-                    <p className="text-sm text-gray-500 mt-1">${solicitud.precio.toFixed(2)}</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handlePagar(solicitud)}
-                  className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm font-medium"
-                >
-                  Pagar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
-      {/* Modal de Pago */}
+      {/* Modal */}
       {isModalOpen && selectedSolicitud && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full relative">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-screen overflow-y-auto relative">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -146,22 +123,8 @@ export default function PaymentTable() {
 
             <div className="p-6">
               <h3 className="text-xl font-bold mb-4">Información de Pago</h3>
-
-              {/* Datos bancarios */}
-              <div className="bg-gray-50 p-4 rounded-lg mb-6 space-y-2">
-                <p className="text-sm">
-                  <span className="font-medium">Número de transferencia:</span> 0108-0014-51-0100023445
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium">Nombre del banco:</span> BBVA Provincial
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium">RIF:</span> J-12345678-9
-                </p>
-              </div>
-
-              {/* Formulario de registro de pago */}
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Número de Transferencia */}
                 <div>
                   <label htmlFor="numeroTransferencia" className="block text-sm font-medium text-gray-700 mb-1">
                     Número de Transferencia
@@ -177,6 +140,7 @@ export default function PaymentTable() {
                   />
                 </div>
 
+                {/* Fecha */}
                 <div>
                   <label htmlFor="fecha" className="block text-sm font-medium text-gray-700 mb-1">
                     Fecha
@@ -192,6 +156,7 @@ export default function PaymentTable() {
                   />
                 </div>
 
+                {/* Nombre */}
                 <div>
                   <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">
                     Nombre
@@ -207,6 +172,7 @@ export default function PaymentTable() {
                   />
                 </div>
 
+                {/* Cédula */}
                 <div>
                   <label htmlFor="cedula" className="block text-sm font-medium text-gray-700 mb-1">
                     Cédula
@@ -222,6 +188,7 @@ export default function PaymentTable() {
                   />
                 </div>
 
+                {/* Carrera */}
                 <div>
                   <label htmlFor="carrera" className="block text-sm font-medium text-gray-700 mb-1">
                     Carrera
@@ -237,6 +204,7 @@ export default function PaymentTable() {
                   />
                 </div>
 
+                {/* Monto */}
                 <div>
                   <label htmlFor="monto" className="block text-sm font-medium text-gray-700 mb-1">
                     Monto
@@ -252,6 +220,23 @@ export default function PaymentTable() {
                   />
                 </div>
 
+                {/* Papel */}
+                <div>
+                  <label htmlFor="papel" className="block text-sm font-medium text-gray-700 mb-1">
+                    Papel
+                  </label>
+                  <select
+                    id="papel"
+                    name="papel"
+                    value={formData.papel}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  >
+                    <option value="Papel Blanco">Papel Blanco</option>
+                    <option value="Papel de Seguridad">Papel de Seguridad</option>
+                  </select>
+                </div>
+
                 <button
                   type="submit"
                   className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm font-medium mt-4"
@@ -264,6 +249,5 @@ export default function PaymentTable() {
         </div>
       )}
     </div>
-  )
+  );
 }
-

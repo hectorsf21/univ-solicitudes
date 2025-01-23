@@ -1,7 +1,8 @@
-"use client";
+'use client'; // Asegúrate de colocar esta directiva al inicio
 
 import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ArrowLeftFromLine } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: number;
@@ -15,24 +16,37 @@ export default function UserRegistration() {
     { id: 2, username: "usuario2", role: "admin" },
     { id: 3, username: "usuario3", role: "control de estudio" },
   ]);
+  
+  const router = useRouter(); // Inicializa el hook useRouter para la navegación
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Aquí iría la lógica para agregar un nuevo usuario
   };
-  // const handleEdit = (_id: number) => {
-  //   // Aquí iría la lógica para editar un usuario
-  //   console.log("Editando usuario");
-  // };
   
-
   const handleDelete = (id: number) => {
     // Aquí iría la lógica para eliminar un usuario
     setUsers(users.filter((user) => user.id !== id));
   };
 
+  // Función para regresar al panel principal
+  const handleReturnToAdminPanel = () => {
+    router.push('/admin'); // Redirige a la vista principal (asegúrate de que '/admin' sea la ruta correcta)
+  };
+
   return (
     <div className="container mx-auto p-4 space-y-6">
+      {/* Botón para regresar al panel principal */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleReturnToAdminPanel}
+          className="text-blue-500 hover:text-blue-700"
+          aria-label="Regresar al panel de control"
+        >
+          <ArrowLeftFromLine className="h-8 w-8" /> {/* Icono de flecha hacia la izquierda */}
+        </button>
+      </div>
+
       {/* Tarjeta de registro de usuarios */}
       <div className="border rounded-lg shadow p-4">
         <h2 className="text-2xl font-bold mb-4">Registro de Usuarios</h2>

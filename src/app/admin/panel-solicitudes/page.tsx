@@ -1,32 +1,33 @@
 "use client"
-
-import { useState } from "react"
-import { X, Pencil, Trash2 } from "lucide-react"
+import { useState } from "react";
+import { X, Pencil, Trash2, ArrowLeftFromLine } from "lucide-react"; 
+import { useRouter } from "next/navigation";
 
 interface Solicitud {
-  id: number
-  nombre: string
-  status: string
-  fechaSolicitud: string
-  numeroReferencia: string
-  emisor: string
-  monto: number
+  id: number;
+  nombre: string;
+  status: string;
+  fechaSolicitud: string;
+  numeroReferencia: string;
+  emisor: string;
+  monto: number;
 }
 
 interface Documento {
-  id: number
-  nombre: string
-  precio: number
+  id: number;
+  nombre: string;
+  precio: number;
 }
 
 export default function SolicitudesPage() {
-  const [modalOpen, setModalOpen] = useState(false)
-  const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<Solicitud | null>(null)
+  const [modalOpen, setModalOpen] = useState(false);
+  const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<Solicitud | null>(null);
+  const router = useRouter();
 
   const solicitudes: Solicitud[] = [
     {
       id: 1,
-      nombre: "Solicitud de Materiales",
+      nombre: "Carta de culminacion",
       status: "En proceso",
       fechaSolicitud: "2024-01-22",
       numeroReferencia: "REF-001",
@@ -35,7 +36,7 @@ export default function SolicitudesPage() {
     },
     {
       id: 2,
-      nombre: "Solicitud de Equipos",
+      nombre: "Fondo negro",
       status: "Pendiente",
       fechaSolicitud: "2024-01-21",
       numeroReferencia: "REF-002",
@@ -44,50 +45,64 @@ export default function SolicitudesPage() {
     },
     {
       id: 3,
-      nombre: "Solicitud de Servicios",
+      nombre: "Carta de buena conducta",
       status: "Listo",
       fechaSolicitud: "2024-01-20",
       numeroReferencia: "REF-003",
       emisor: "Carlos López",
       monto: 3500.0,
     },
-  ]
+  ];
 
   const documentos: Documento[] = [
     {
       id: 1,
-      nombre: "Documento 1",
+      nombre: "Fondo negro",
       precio: 1000.0,
     },
     {
       id: 2,
-      nombre: "Documento 2",
+      nombre: "Carta de culminacion",
       precio: 2000.0,
     },
     {
       id: 3,
-      nombre: "Documento 3",
+      nombre: "Notas certificadas",
       precio: 3000.0,
     },
-  ]
+  ];
 
   const handleVerDetalle = (solicitud: Solicitud) => {
-    setSolicitudSeleccionada(solicitud)
-    setModalOpen(true)
-  }
+    setSolicitudSeleccionada(solicitud);
+    setModalOpen(true);
+  };
 
   const handleModificar = (id: number) => {
-    // Implementar lógica de modificación
-    console.log("Modificar documento:", id)
-  }
+    console.log("Modificar documento:", id);
+  };
 
   const handleEliminar = (id: number) => {
-    // Implementar lógica de eliminación
-    console.log("Eliminar documento:", id)
-  }
+    console.log("Eliminar documento:", id);
+  };
+
+  // Función para regresar a la vista principal de administración
+  const handleReturnToAdminPanel = () => {
+    router.push('/admin'); // Redirige al panel de control principal
+  };
 
   return (
     <div className="container mx-auto p-4 space-y-8">
+      {/* Botón para regresar a la vista principal */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleReturnToAdminPanel}
+          className="text-blue-500 hover:text-blue-700"
+          aria-label="Regresar al panel de control"
+        >
+          <ArrowLeftFromLine className="h-8 w-8" /> {/* Icono de flecha hacia la izquierda */}
+        </button>
+      </div>
+
       {/* Tabla de Solicitudes en Proceso */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold mb-4">Solicitudes en Proceso</h2>
@@ -116,12 +131,11 @@ export default function SolicitudesPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${
-                        solicitud.status === "En proceso"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : solicitud.status === "Pendiente"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-green-100 text-green-800"
+                      ${solicitud.status === "En proceso"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : solicitud.status === "Pendiente"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-green-100 text-green-800"
                       }`}
                     >
                       {solicitud.status}
@@ -174,7 +188,10 @@ export default function SolicitudesPage() {
                       >
                         <Pencil className="h-5 w-5" />
                       </button>
-                      <button onClick={() => handleEliminar(documento.id)} className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => handleEliminar(documento.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <Trash2 className="h-5 w-5" />
                       </button>
                     </div>
@@ -199,36 +216,17 @@ export default function SolicitudesPage() {
             <div className="p-6">
               <h3 className="text-xl font-bold mb-4">Detalle de la Solicitud</h3>
               <div className="space-y-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Nombre de la Solicitud</p>
-                  <p className="mt-1">{solicitudSeleccionada.nombre}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Estatus</p>
-                  <p className="mt-1">{solicitudSeleccionada.status}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Fecha de Creación</p>
-                  <p className="mt-1">{solicitudSeleccionada.fechaSolicitud}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Número de Referencia</p>
-                  <p className="mt-1">{solicitudSeleccionada.numeroReferencia}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Persona que Emitió</p>
-                  <p className="mt-1">{solicitudSeleccionada.emisor}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Monto</p>
-                  <p className="mt-1">${solicitudSeleccionada.monto.toFixed(2)}</p>
-                </div>
+                <p><strong>Nombre:</strong> {solicitudSeleccionada.nombre}</p>
+                <p><strong>Status:</strong> {solicitudSeleccionada.status}</p>
+                <p><strong>Fecha de Solicitud:</strong> {solicitudSeleccionada.fechaSolicitud}</p>
+                <p><strong>Referencia:</strong> {solicitudSeleccionada.numeroReferencia}</p>
+                <p><strong>Emisor:</strong> {solicitudSeleccionada.emisor}</p>
+                <p><strong>Monto:</strong> ${solicitudSeleccionada.monto.toFixed(2)}</p>
               </div>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
-
