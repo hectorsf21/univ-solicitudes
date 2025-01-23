@@ -20,10 +20,10 @@ export default function UserRegistration() {
     e.preventDefault();
     // Aquí iría la lógica para agregar un nuevo usuario
   };
-  const handleEdit = (_id: number) => {
-    // Aquí iría la lógica para editar un usuario
-    console.log("Editando usuario");
-  };
+  // const handleEdit = (_id: number) => {
+  //   // Aquí iría la lógica para editar un usuario
+  //   console.log("Editando usuario");
+  // };
   
 
   const handleDelete = (id: number) => {
@@ -102,7 +102,7 @@ export default function UserRegistration() {
                   <td className="border-b p-2 text-right">
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={() => handleEdit(user.id)}
+                        // onClick={() => handleEdit(user.id)}
                         className="p-2 text-gray-500 hover:text-gray-700"
                       >
                         <Pencil className="h-4 w-4" />
