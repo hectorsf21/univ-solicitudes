@@ -126,7 +126,7 @@ export default function ReportsTable() {
             <thead className="bg-gray-100 text-gray-700">
               <tr>
                 <th className="border-b p-2 text-left text-sm font-semibold">Fecha</th>
-                <th className="border-b p-2 text-left text-sm font-semibold">Tipo de Documento</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Tipo de Documentos</th>
                 <th className="border-b p-2 text-left text-sm font-semibold">Tipo de Papel</th>
                 <th className="border-b p-2 text-left text-sm font-semibold">Costo</th>
                 <th className="border-b p-2 text-left text-sm font-semibold">Cantidad</th>
