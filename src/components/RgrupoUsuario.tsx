@@ -44,18 +44,13 @@ export default function UserGroupsPanel() {
     },
   });
 
-  const [error, setError] = useState(""); // Mensaje de error si el grupo ya existe
   const router = useRouter(); // Inicializamos useRouter
 
   // Función para manejar el registro de un grupo de usuarios
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validación de campos
-    if (!group.name || !group.role) {
-      setError("Todos los campos son obligatorios.");
-      return;
-    }
+   
 
     // Si todo está bien, se registra el grupo
     console.log("Nuevo Grupo registrado:", group);
