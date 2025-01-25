@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { UserProvider } from "@/context/UserContext"; // Importa tu UserProvider
-import ClientLayout from "@/components/ClientLayout"; // Nuevo componente cliente
 
 export const metadata: Metadata = {
   title: "Romulo Gallegos",
@@ -17,8 +16,8 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <UserProvider>
-          {/* Mover la lógica de cliente aquí */}
-          <ClientLayout>{children}</ClientLayout>
+        
+          {children}
         </UserProvider>
       </body>
     </html>
