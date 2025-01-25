@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FaSearch, FaEye, FaPrint, FaShoppingCart } from "react-icons/fa"
+import { FaSearch} from "react-icons/fa"
 import CartModal from "@/components/CardModal"
 import Consulta from "@/components/Consulta"
 import Documentos from "@/components/Documentos"
