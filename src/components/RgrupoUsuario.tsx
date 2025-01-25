@@ -3,15 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation"; // Importamos useRouter
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import RgrupoUsuario from "@/components/RgrupoUsuario";
 
-// Definir las interfaces para los grupos y usuarios
-
-
-interface User {
+// Definir la interfaz para los grupos
+interface Group {
   id: number;
-  username: string;
-  password: string;
+  name: string;
   role: string;
   permisosSolicitudes: {
     verNoValidas: boolean;
@@ -26,18 +22,16 @@ interface User {
 
 export default function UserGroupsPanel() {
   // Estado para los grupos de usuarios
- 
-
-  // Estado para los usuarios registrados
-  const [users, setUsers] = useState<User[]>([
-    { id: 1, username: "usuario1", password: "pass1", role: "Súper Usuario", permisosSolicitudes: { verNoValidas: true, verValidarEntrega: true, verEntregadas: true }, permisosReportes: { reportesFinancieros: true, reportesSolicitudes: true }},
-    { id: 2, username: "usuario2", password: "pass2", role: "Usuario Admin", permisosSolicitudes: { verNoValidas: false, verValidarEntrega: true, verEntregadas: false }, permisosReportes: { reportesFinancieros: false, reportesSolicitudes: true }},
+  const [groups, setGroups] = useState<Group[]>([
+    { id: 1, name: "Súper Usuario", role: "super_usuario", permisosSolicitudes: { verNoValidas: true, verValidarEntrega: true, verEntregadas: true }, permisosReportes: { reportesFinancieros: true, reportesSolicitudes: true } },
+    { id: 2, name: "Usuario Admin", role: "admin", permisosSolicitudes: { verNoValidas: false, verValidarEntrega: true, verEntregadas: false }, permisosReportes: { reportesFinancieros: false, reportesSolicitudes: true } },
+    { id: 3, name: "Usuario Solicitante", role: "solicitante", permisosSolicitudes: { verNoValidas: false, verValidarEntrega: false, verEntregadas: false }, permisosReportes: { reportesFinancieros: false, reportesSolicitudes: false } }
   ]);
 
-  const [user, setUser] = useState<User>({
+  // Estado para el nuevo grupo que se registrará
+  const [group, setGroup] = useState<Group>({
     id: 0,
-    username: "",
-    password: "",
+    name: "",
     role: "",
     permisosSolicitudes: {
       verNoValidas: false,
@@ -53,25 +47,24 @@ export default function UserGroupsPanel() {
   const [error, setError] = useState(""); // Mensaje de error si el grupo ya existe
   const router = useRouter(); // Inicializamos useRouter
 
-  // Función para manejar el registro de usuario
+  // Función para manejar el registro de un grupo de usuarios
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Validación de campos
-    if (!user.username || !user.password || !user.role) {
+    if (!group.name || !group.role) {
       setError("Todos los campos son obligatorios.");
       return;
     }
 
-    // Si todo está bien, se registra el usuario
-    console.log("Nuevo Usuario registrado:", user);
-    alert("Usuario registrado exitosamente.");
+    // Si todo está bien, se registra el grupo
+    console.log("Nuevo Grupo registrado:", group);
+    alert("Grupo registrado exitosamente.");
     
     // Limpiar el formulario después del registro
-    setUser({
+    setGroup({
       id: 0,
-      username: "",
-      password: "",
+      name: "",
       role: "",
       permisosSolicitudes: {
         verNoValidas: false,
@@ -85,48 +78,44 @@ export default function UserGroupsPanel() {
     });
   };
 
-  // Función para manejar los cambios en los campos del formulario
+  // Función para manejar los cambios en los campos del formulario de grupo
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
-  
+
     // Si el tipo es checkbox, actualizamos el estado con 'checked'
     if (type === "checkbox") {
-      // Dividimos el 'name' para identificar el permiso de solicitudes o reportes
-      const [category, permission] = name.split('.'); // ejemplo: 'permisosSolicitudes.verNoValidas'
-  
+      // Verificamos si estamos en los permisos de solicitudes o reportes
+      const [category, permission] = name.split('.');
       if (category === 'permisosSolicitudes') {
-        // Actualizamos los permisos de solicitudes
-        setUser((prev) => ({
+        setGroup((prev) => ({
           ...prev,
           permisosSolicitudes: {
             ...prev.permisosSolicitudes,
-            [permission]: checked, // actualizamos el permiso correspondiente
+            [permission]: checked,
           },
         }));
       } else if (category === 'permisosReportes') {
-        // Actualizamos los permisos de reportes
-        setUser((prev) => ({
+        setGroup((prev) => ({
           ...prev,
           permisosReportes: {
             ...prev.permisosReportes,
-            [permission]: checked, // actualizamos el permiso correspondiente
+            [permission]: checked,
           },
         }));
       }
     } else {
-      // Si es un input de texto o select, actualizamos el estado normalmente
-      setUser((prev) => ({
+      // Si es un input de texto o select
+      setGroup((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
   };
-  
 
   // Función para manejar el cambio de rol
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedRole = e.target.value;
-    setUser((prev) => ({
+    setGroup((prev) => ({
       ...prev,
       role: selectedRole,
       permisosSolicitudes: {
@@ -146,54 +135,37 @@ export default function UserGroupsPanel() {
     router.push(`/admin/panel-usuarios/${encodeURIComponent(name)}`);
   };
 
-  // Función para eliminar usuario
-  const handleUserDelete = (id: number) => {
-    setUsers(users.filter((user) => user.id !== id));
+  // Función para eliminar grupo
+  const handleDelete = (id: number) => {
+    setGroups(groups.filter((group) => group.id !== id));
   };
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      {/* Título */}
-      <h1 className="text-2xl font-bold mb-6">Panel de Usuarios</h1>
-
-      {/* Formulario de Registro de Usuario */}
+      {/* Formulario de Registro de Grupo de Usuarios */}
       <div className="border rounded-lg shadow p-4">
-        <h2 className="text-2xl font-bold mb-4">Registro de Usuario</h2>
+        <h2 className="text-2xl font-bold mb-4">Registro de Grupo de Usuarios</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="username" className="text-sm font-medium">Usuario</label>
+            <label htmlFor="name" className="text-sm font-medium">Nombre del Grupo</label>
             <input
-              id="username"
-              name="username"
+              id="name"
+              name="name"
               type="text"
-              value={user.username}
+              value={group.name}
               onChange={handleInputChange}
               required
-              placeholder="Ingrese el nombre del usuario"
+              placeholder="Ingrese el nombre del grupo"
               className="w-full p-2 border rounded"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">Contraseña</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={user.password}
-              onChange={handleInputChange}
-              required
-              placeholder="Ingrese la contraseña"
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="role" className="text-sm font-medium">Rol</label>
+            <label htmlFor="role" className="text-sm font-medium">Rol Administrativo</label>
             <select
               id="role"
               name="role"
-              value={user.role}
+              value={group.role}
               onChange={handleRoleChange}
               required
               className="w-full p-2 border rounded"
@@ -207,7 +179,7 @@ export default function UserGroupsPanel() {
           </div>
 
           {/* Permisos de Solicitudes */}
-          {(user.role === "coordinacion" || user.role === "fundesurg") && (
+          {(group.role === "coordinacion" || group.role === "fundesurg") && (
             <div className="border p-4 rounded">
               <h3 className="text-lg font-medium">Permisos de Solicitudes</h3>
               <div className="space-y-2">
@@ -215,7 +187,7 @@ export default function UserGroupsPanel() {
                   <input
                     type="checkbox"
                     name="permisosSolicitudes.verNoValidas"
-                    checked={user.permisosSolicitudes.verNoValidas}
+                    checked={group.permisosSolicitudes.verNoValidas}
                     onChange={handleInputChange}
                     className="form-checkbox"
                   />
@@ -225,7 +197,7 @@ export default function UserGroupsPanel() {
                   <input
                     type="checkbox"
                     name="permisosSolicitudes.verValidarEntrega"
-                    checked={user.permisosSolicitudes.verValidarEntrega}
+                    checked={group.permisosSolicitudes.verValidarEntrega}
                     onChange={handleInputChange}
                     className="form-checkbox"
                   />
@@ -235,7 +207,7 @@ export default function UserGroupsPanel() {
                   <input
                     type="checkbox"
                     name="permisosSolicitudes.verEntregadas"
-                    checked={user.permisosSolicitudes.verEntregadas}
+                    checked={group.permisosSolicitudes.verEntregadas}
                     onChange={handleInputChange}
                     className="form-checkbox"
                   />
@@ -246,7 +218,7 @@ export default function UserGroupsPanel() {
           )}
 
           {/* Permisos de Reportes */}
-          {(user.role === "coordinacion" || user.role === "fundesurg") && (
+          {(group.role === "coordinacion" || group.role === "fundesurg") && (
             <div className="border p-4 rounded">
               <h3 className="text-lg font-medium">Permisos de Reportes</h3>
               <div className="space-y-2">
@@ -254,7 +226,7 @@ export default function UserGroupsPanel() {
                   <input
                     type="checkbox"
                     name="permisosReportes.reportesFinancieros"
-                    checked={user.permisosReportes.reportesFinancieros}
+                    checked={group.permisosReportes.reportesFinancieros}
                     onChange={handleInputChange}
                     className="form-checkbox"
                   />
@@ -264,7 +236,7 @@ export default function UserGroupsPanel() {
                   <input
                     type="checkbox"
                     name="permisosReportes.reportesSolicitudes"
-                    checked={user.permisosReportes.reportesSolicitudes}
+                    checked={group.permisosReportes.reportesSolicitudes}
                     onChange={handleInputChange}
                     className="form-checkbox"
                   />
@@ -278,34 +250,30 @@ export default function UserGroupsPanel() {
             type="submit"
             className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Registrar Usuario
+            Registrar Grupo
           </button>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>} {/* Mostrar error */}
         </form>
       </div>
 
-      {/* Tarjeta de lista de usuarios registrados */}
+      {/* Tarjeta de lista de grupos de usuarios */}
       <div className="border rounded-lg shadow p-4">
-        <h2 className="text-xl font-bold mb-4">Usuarios Registrados</h2>
+        <h2 className="text-xl font-bold mb-4">Lista de Grupos de Usuarios</h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="border-b p-2 text-left">Nombre de Usuario</th>
-                <th className="border-b p-2 text-left">Rol</th>
+                <th className="border-b p-2 text-left">Nombre del Grupo</th>
                 <th className="border-b p-2 text-right">Editar</th>
                 <th className="border-b p-2 text-right">Eliminar</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="border-b p-2">{user.username}</td>
-                  <td className="border-b p-2">{user.role}</td>
+              {groups.map((group) => (
+                <tr key={group.id}>
+                  <td className="border-b p-2">{group.name}</td>
                   <td className="border-b p-2 text-right">
                     <button
-                      onClick={() => handleEdit(user.username)}
+                      onClick={() => handleEdit(group.name)}
                       className="text-blue-500 hover:text-blue-700"
                     >
                       <FaEdit className="h-4 w-4" />
@@ -313,7 +281,7 @@ export default function UserGroupsPanel() {
                   </td>
                   <td className="border-b p-2 text-right">
                     <button
-                      onClick={() => handleUserDelete(user.id)}
+                      onClick={() => handleDelete(group.id)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <FaTrashAlt className="h-4 w-4" />
@@ -325,9 +293,6 @@ export default function UserGroupsPanel() {
           </table>
         </div>
       </div>
-      {/* Tarjeta de lista de grupos de usuarios */}
-      <RgrupoUsuario />
     </div>
-    
   );
 }

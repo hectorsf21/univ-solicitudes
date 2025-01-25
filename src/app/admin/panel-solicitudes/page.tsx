@@ -1,232 +1,164 @@
-"use client"
+'use client';
+
 import { useState } from "react";
-import { X, Pencil, Trash2, ArrowLeftFromLine } from "lucide-react"; 
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import Icon from "@/components/Icon";
+import { RiArrowGoBackLine } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 
-interface Solicitud {
-  id: number;
-  nombre: string;
-  status: string;
+// Definir las interfaces para los reportes
+interface Report {
+  codigo: string;
+  documento: string;
+  cantidad: number;
   fechaSolicitud: string;
-  numeroReferencia: string;
-  emisor: string;
-  monto: number;
+  estatus: {
+    lista: string;
+    entregada: string;
+    enProceso: string;
+    devuelto: string;
+  };
 }
 
-interface Documento {
-  id: number;
-  nombre: string;
-  precio: number;
+interface ReporteFinanciero {
+  fecha: string;
+  tipoDocumento: string;
+  tipoPapel: string;
+  costo: number;
+  cantidad: number;
+  subtotal: number;
 }
 
-export default function SolicitudesPage() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<Solicitud | null>(null);
-  const router = useRouter();
+export default function ReportsTable() {
+  const router = useRouter(); // Usa el hook useRouter de Next.js
 
-  const solicitudes: Solicitud[] = [
-    {
-      id: 1,
-      nombre: "Carta de culminacion",
-      status: "En proceso",
-      fechaSolicitud: "2024-01-22",
-      numeroReferencia: "REF-001",
-      emisor: "Juan Pérez",
-      monto: 1500.0,
-    },
-    {
-      id: 2,
-      nombre: "Fondo negro",
-      status: "Pendiente",
-      fechaSolicitud: "2024-01-21",
-      numeroReferencia: "REF-002",
-      emisor: "María García",
-      monto: 2500.0,
-    },
-    {
-      id: 3,
-      nombre: "Carta de buena conducta",
-      status: "Listo",
-      fechaSolicitud: "2024-01-20",
-      numeroReferencia: "REF-003",
-      emisor: "Carlos López",
-      monto: 3500.0,
-    },
-  ];
+  // Estado para los reportes de solicitudes
+  const [reports, setReports] = useState<Report[]>([
+    {codigo: "R001", documento: "Solicitud de Materiales", cantidad: 5, fechaSolicitud: "2024-01-15", estatus: { lista: "2024-01-16", entregada: "2024-01-20", enProceso: "2024-01-17", devuelto: "2024-01-21" }},
+    {codigo: "R002", documento: "Certificado de Título", cantidad: 3, fechaSolicitud: "2024-01-18", estatus: { lista: "2024-01-19", entregada: "2024-01-22", enProceso: "2024-01-20", devuelto: "2024-01-23" }},
+    {codigo: "R003", documento: "Carta de Buena Conducta", cantidad: 2, fechaSolicitud: "2024-01-20", estatus: { lista: "2024-01-21", entregada: "2024-01-25", enProceso: "2024-01-23", devuelto: "2024-01-26" }},
+  ]);
 
-  const documentos: Documento[] = [
-    {
-      id: 1,
-      nombre: "Fondo negro",
-      precio: 1000.0,
-    },
-    {
-      id: 2,
-      nombre: "Carta de culminacion",
-      precio: 2000.0,
-    },
-    {
-      id: 3,
-      nombre: "Notas certificadas",
-      precio: 3000.0,
-    },
-  ];
+  // Estado para los reportes financieros
+  const [financialReports, setFinancialReports] = useState<ReporteFinanciero[]>([
+    { fecha: "2024-01-15", tipoDocumento: "Solicitud de Materiales", tipoPapel: "Papel blanco", costo: 100, cantidad: 5, subtotal: 500 },
+    { fecha: "2024-01-18", tipoDocumento: "Certificado de Título", tipoPapel: "Papel de seguridad", costo: 150, cantidad: 3, subtotal: 450 },
+    { fecha: "2024-01-20", tipoDocumento: "Carta de Buena Conducta", tipoPapel: "Papel blanco", costo: 75, cantidad: 2, subtotal: 150 },
+  ]);
 
-  const handleVerDetalle = (solicitud: Solicitud) => {
-    setSolicitudSeleccionada(solicitud);
-    setModalOpen(true);
-  };
+  // Calcular el total de todos los subtotales
+  const total = financialReports.reduce((acc, report) => acc + report.subtotal, 0);
 
-  const handleModificar = (id: number) => {
-    console.log("Modificar documento:", id);
-  };
+  const [userPermissions, setUserPermissions] = useState({
+    reportesSolicitudes: true, // Permiso para ver reportes de solicitudes
+    reportesFinancieros: true, // Permiso para ver reportes financieros
+  });
 
-  const handleEliminar = (id: number) => {
-    console.log("Eliminar documento:", id);
-  };
-
-  // Función para regresar a la vista principal de administración
+  // Función para regresar al panel de administración
   const handleReturnToAdminPanel = () => {
-    router.push('/admin'); // Redirige al panel de control principal
+    router.push("/admin"); // Navegar usando router.push() de Next.js
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-8">
-      {/* Botón para regresar a la vista principal */}
-      <div className="flex justify-end mb-4">
+    <div className="container mx-auto p-4 space-y-6">
+      <div className="flex justify-end my-4">
         <button
           onClick={handleReturnToAdminPanel}
           className="text-blue-500 hover:text-blue-700"
           aria-label="Regresar al panel de control"
         >
-          <ArrowLeftFromLine className="h-8 w-8" /> {/* Icono de flecha hacia la izquierda */}
+          <Icon icon={<RiArrowGoBackLine size={28} />} />
         </button>
       </div>
-
-      {/* Tabla de Solicitudes en Proceso */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-4">Solicitudes en Proceso</h2>
+      <h2 className="text-2xl font-bold mb-4">Módulo de Reportes</h2>
+      
+      {/* Tabla de Reportes de Solicitudes */}
+      <h3 className="text-2xl mb-4">Reportes de Solicitudes</h3>
+      <div className="border rounded-lg shadow p-4">
+        <h3 className="text-xl font-bold mb-4">Lista de Reportes de Solicitudes</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse">
-            <thead className="bg-gray-50">
+          <table className="w-full table-auto border-collapse shadow-md rounded-lg mb-4">
+            <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nombre
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fecha de Solicitud
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Detalle
-                </th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Código</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Documento</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Cantidad</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Fecha de Solicitud</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Lista</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Entregada</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">En Proceso</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Devuelto</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Acción</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {solicitudes.map((solicitud) => (
-                <tr key={solicitud.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">{solicitud.nombre}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${solicitud.status === "En proceso"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : solicitud.status === "Pendiente"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {solicitud.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{solicitud.fechaSolicitud}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => handleVerDetalle(solicitud)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Ver detalle
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            <tbody>
+              {reports
+                .filter(report => 
+                  userPermissions.reportesSolicitudes || userPermissions.reportesFinancieros
+                )
+                .map((report) => (
+                  <tr key={report.codigo} className="hover:bg-gray-50 transition-colors duration-150">
+                    <td className="border-b p-2">{report.codigo}</td>
+                    <td className="border-b p-2">{report.documento}</td>
+                    <td className="border-b p-2">{report.cantidad}</td>
+                    <td className="border-b p-2">{report.fechaSolicitud}</td>
+                    <td className="border-b p-2">{report.estatus.lista}</td>
+                    <td className="border-b p-2">{report.estatus.entregada}</td>
+                    <td className="border-b p-2">{report.estatus.enProceso}</td>
+                    <td className="border-b p-2">{report.estatus.devuelto}</td>
+                    <td className="border-b p-2 flex space-x-2">
+                      <FaEdit className="text-blue-600 cursor-pointer" />
+                      <FaTrashAlt className="text-red-600 cursor-pointer" />
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Tabla de Documentación de Solicitudes */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-4">Documentación de Solicitudes</h2>
+      {/* Tabla de Reportes Financieros */}
+      <h3 className="text-2xl mb-4">Reportes Financieros</h3>
+      <div className="border rounded-lg shadow p-4">
+        <h3 className="text-xl font-bold mb-4">Lista de Reportes Financieros</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse">
-            <thead className="bg-gray-50">
+          <table className="w-full table-auto border-collapse shadow-md rounded-lg mb-4">
+            <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nombre de la Solicitud
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Precio
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Acciones
-                </th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Fecha</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Tipo de Documento</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Tipo de Papel</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Costo</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Cantidad</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Subtotal</th>
+                <th className="border-b p-2 text-left text-sm font-semibold">Acción</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {documentos.map((documento) => (
-                <tr key={documento.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">{documento.nombre}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">${documento.precio.toFixed(2)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleModificar(documento.id)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        <Pencil className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleEliminar(documento.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
+            <tbody>
+              {financialReports.map((report, index) => (
+                <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+                  <td className="border-b p-2">{report.fecha}</td>
+                  <td className="border-b p-2">{report.tipoDocumento}</td>
+                  <td className="border-b p-2">{report.tipoPapel}</td>
+                  <td className="border-b p-2">{report.costo}</td>
+                  <td className="border-b p-2">{report.cantidad}</td>
+                  <td className="border-b p-2">{report.subtotal}</td>
+                  <td className="border-b p-2 flex space-x-2">
+                    <FaEdit className="text-blue-600 cursor-pointer" />
+                    <FaTrashAlt className="text-red-600 cursor-pointer" />
                   </td>
                 </tr>
               ))}
+              {/* Fila de total */}
+              <tr className="font-bold">
+                <td colSpan={5} className="border-b p-2 text-left">Total</td>
+                <td className="border-b p-2 text-right">{total}</td>
+                <td className="border-b p-2"></td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* Modal de Detalle de Solicitud */}
-      {modalOpen && solicitudSeleccionada && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-lg w-full relative">
-            <button
-              onClick={() => setModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-4">Detalle de la Solicitud</h3>
-              <div className="space-y-4">
-                <p><strong>Nombre:</strong> {solicitudSeleccionada.nombre}</p>
-                <p><strong>Status:</strong> {solicitudSeleccionada.status}</p>
-                <p><strong>Fecha de Solicitud:</strong> {solicitudSeleccionada.fechaSolicitud}</p>
-                <p><strong>Referencia:</strong> {solicitudSeleccionada.numeroReferencia}</p>
-                <p><strong>Emisor:</strong> {solicitudSeleccionada.emisor}</p>
-                <p><strong>Monto:</strong> ${solicitudSeleccionada.monto.toFixed(2)}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
