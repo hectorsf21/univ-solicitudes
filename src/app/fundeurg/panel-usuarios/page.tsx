@@ -17,7 +17,7 @@ interface UserGroup {
 }
 
 export default function UserPanel() {
-  const [users, setUsers] = useState<User[]>([
+  const [users] = useState<User[]>([
     {
       id: 1,
       username: "usuario1",
@@ -26,7 +26,7 @@ export default function UserPanel() {
     },
   ])
 
-  const [groups, setGroups] = useState<UserGroup[]>([
+  const [groups] = useState<UserGroup[]>([
     {
       id: 1,
       name: "Administradores",

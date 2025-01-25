@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 interface User {
@@ -16,7 +16,6 @@ export default function GroupDetails() {
     { id: 2, username: "usuario2", role: "super usuario" },
   ]);
 
-  const router = useRouter();
   const params = useParams(); // Obtiene los parámetros dinámicos de la URL
 
   // Maneja el caso de string | string[]

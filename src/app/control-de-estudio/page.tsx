@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 // Definir las interfaces para los reportes
 interface Report {
@@ -28,14 +27,14 @@ interface ReporteFinanciero {
 
 export default function ReportsTable() {
   // Estado para los reportes de solicitudes
-  const [reports, setReports] = useState<Report[]>([
+  const [reports] = useState<Report[]>([
     {codigo: "R001", documento: "Solicitud de Materiales", cantidad: 5, fechaSolicitud: "2024-01-15", estatus: { lista: "2024-01-16", entregada: "2024-01-20", enProceso: "2024-01-17", devuelto: "2024-01-21" }},
     {codigo: "R002", documento: "Certificado de Título", cantidad: 3, fechaSolicitud: "2024-01-18", estatus: { lista: "2024-01-19", entregada: "2024-01-22", enProceso: "2024-01-20", devuelto: "2024-01-23" }},
     {codigo: "R003", documento: "Carta de Buena Conducta", cantidad: 2, fechaSolicitud: "2024-01-20", estatus: { lista: "2024-01-21", entregada: "2024-01-25", enProceso: "2024-01-23", devuelto: "2024-01-26" }},
   ]);
 
   // Estado para los reportes financieros
-  const [financialReports, setFinancialReports] = useState<ReporteFinanciero[]>([
+  const [financialReports] = useState<ReporteFinanciero[]>([
     { fecha: "2024-01-15", tipoDocumento: "Solicitud de Materiales", tipoPapel: "Papel blanco", costo: 100, cantidad: 5, subtotal: 500 },
     { fecha: "2024-01-18", tipoDocumento: "Certificado de Título", tipoPapel: "Papel de seguridad", costo: 150, cantidad: 3, subtotal: 450 },
     { fecha: "2024-01-20", tipoDocumento: "Carta de Buena Conducta", tipoPapel: "Papel blanco", costo: 75, cantidad: 2, subtotal: 150 },
@@ -44,7 +43,7 @@ export default function ReportsTable() {
   // Calcular el total de todos los subtotales
   const total = financialReports.reduce((acc, report) => acc + report.subtotal, 0);
 
-  const [userPermissions, setUserPermissions] = useState({
+  const [userPermissions] = useState({
     reportesSolicitudes: true, // Permiso para ver reportes de solicitudes
     reportesFinancieros: true, // Permiso para ver reportes financieros
   });
