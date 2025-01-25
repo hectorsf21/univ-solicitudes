@@ -71,11 +71,8 @@ export default function ReportsTable() {
               </tr>
             </thead>
             <tbody>
-              {reports
-                .filter(report => 
-                  userPermissions.reportesSolicitudes || userPermissions.reportesFinancieros
-                )
-                .map((report) => (
+             
+                {reports.map((report) => (
                   <tr key={report.codigo} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="border-b p-2">{report.codigo}</td>
                     <td className="border-b p-2">{report.documento}</td>

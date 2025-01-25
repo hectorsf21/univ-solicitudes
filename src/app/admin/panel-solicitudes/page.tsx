@@ -49,10 +49,10 @@ export default function ReportsTable() {
   // Calcular el total de todos los subtotales
   const total = financialReports.reduce((acc, report) => acc + report.subtotal, 0);
 
-  const [userPermissions] = useState({
-    reportesSolicitudes: true, // Permiso para ver reportes de solicitudes
-    reportesFinancieros: true, // Permiso para ver reportes financieros
-  });
+  // const [userPermissions] = useState({
+  //   reportesSolicitudes: true, // Permiso para ver reportes de solicitudes
+  //   reportesFinancieros: true, // Permiso para ver reportes financieros
+  // });
 
   // Función para regresar al panel de administración
   const handleReturnToAdminPanel = () => {
